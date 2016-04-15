@@ -1,23 +1,27 @@
 """This file should have our order classes in it."""
+from random import randint
 class AbstractMelonOrder(object):
     """All melon orders"""
 
-    
     def __init__(self,species, qty):
         self.species = species
         self.qty = qty
         self.shipped = False
+        self.base_price = randint(5,9)
+
+
+    def get_base_price(self):
+        """determines base price of melon order"""
+        # Evaluates if melon is "Christmas Melon" and updates base price accordingly
+        if self.species == "Christmas Melon":
+            self.base_price = self.base_price * 1.5
+        return self.base_price
 
 
     def get_total(self):
         """Calculate price."""
-        base_price = 5
-        
-        # Evaluates if melon is "Christmas Melon" and updates base price accordingly
-        if self.species == "Christmas Melon":
-            base_price = base_price * 1.5
 
-        total = (1 + self.tax) * self.qty * base_price
+        total = (1 + self.tax) * self.qty * self.get_base_price()
         return total
 
     
@@ -29,25 +33,21 @@ class AbstractMelonOrder(object):
 
 class DomesticMelonOrder(AbstractMelonOrder):
     """A domestic (in the US) melon order."""
-
     
-    def __init__(self, species, qty):
-        """Initialize melon order attributes"""
-        super(DomesticMelonOrder, self).__init__(species, qty)
-        self.order_type = "domestic"
-        self.tax = 0.08
+    order_type = "domestic"
+    tax = 0.08
 
 
 class InternationalMelonOrder(AbstractMelonOrder):
     """An international (non-US) melon order."""
-
     
+    order_type = "international"
+    tax = 0.17
+
     def __init__(self, species, qty, country_code):
         """Initialize melon order attributes"""
         super(InternationalMelonOrder, self).__init__(species, qty)
         self.country_code = country_code
-        self.order_type = "international"
-        self.tax = 0.17
 
     
     def get_country_code(self):
@@ -61,15 +61,15 @@ class InternationalMelonOrder(AbstractMelonOrder):
 
         if self.qty < 10:
             total_price += 3
-        print "hi!"
         return total_price
 
-        
-    # if qty < 10
-    #     def get_total(self):
-    #         base_price = 5
-        
-    #         total = (1 + self.tax) * self.qty * base_price + 3
-    #         return total
-    # else:
-    #     
+class GovernmentMelonOrder(AbstractMelonOrder):
+    """Government Melon Orders (no tax)"""
+
+    tax = 0.00
+    passed_inspection = False
+
+    def mark_inspection(self, passed):
+        """Set passed_inspection to True"""
+        if passed:
+            self.passed_inspection = True
